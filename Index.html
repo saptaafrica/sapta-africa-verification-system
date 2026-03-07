@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAPTA College - Student ID Verification System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #E07B39;
+            --brown: #7D4E2D;
+            --green: #3DAF7A;
+            --white: #FFFFFF;
+            --gray-label: #9B9B9B;
+            --dark: #2C1810;
+            --dark-navy: #1a2340;
+            --text-value: #1E1E1E;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background:  linear-gradient(135deg, #fdf6f0, #f3e7db, #e9d5c5);
+            min-height: 100vh;
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ========== DIRECTORY VIEW ========== */
+        #directoryView {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dir-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .dir-logo-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+        }
+
+        .dir-logo-name .sapta { color: var(--brown); }
+        .dir-logo-name .college { color: var(--orange); }
+
+        .dir-logo-tagline {
+            font-size: 15px;
+            letter-spacing: 4px;
+            color: var(--brown);
+            text-transform: uppercase;
+        }
+
+        .dir-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark-navy);
+            margin-bottom: 5px;
+        }
+
+        .dir-subtitle {
+            color: var(--gray-label);
+            font-size: 22px;
+            margin-bottom: 25px;
+            text-shadow: #555;
+        }
+
+        .info-box {
+            background: #FFF8F3;
+            border-left: 4px solid var(--orange);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .stats-bar {
+            background: var(--green);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'DM Sans', sans-serif;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .student-card-dir {
+            background: #F8F8F8;
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: 2px solid #eee;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .student-card-dir:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: var(--green);
+        }
+
+        .dir-student-id {
+            font-size: 11px;
+            color: var(--gray-label);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 6px;
+        }
+
+        .dir-student-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark-navy);
+            margin-bottom: 4px;
+        }
+
+        .dir-student-gender {
+            font-size: 12px;
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        /* ========== VERIFICATION VIEW ========== */
+        #verificationView {
+            max-width: 430px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .back-btn {
+            background: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--brown);
+            cursor: pointer;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.25s;
+            display: block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        /* ===== ID CARD ===== */
+        .id-card {
+            background: var(--white);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.18);
+            position: relative;
+        }
+
+        /* Orange Corners */
+        .corner { position: absolute; width: 110px; height: 110px; background: var(--orange); z-index: 1; }
+        .corner-tl { top: 0; left: 0; clip-path: polygon(0 0, 100% 0, 0 100%); }
+        .corner-tr { top: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 0); }
+        .corner-bl { bottom: 0; left: 0; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+        .corner-br { bottom: 0; right: 0; clip-path: polygon(100% 0, 0 100%, 100% 100%); }
+
+        /* Dot Patterns */
+        .dots { position: absolute; display: grid; grid-template-columns: repeat(3, 6px); gap: 8px; z-index: 3; }
+        .dots-left { left: 12px; top: 210px; }
+        .dots-right { right: 12px; top: 50%; transform: translateY(-30%); }
+        .dot { width: 6px; height: 6px; background: var(--orange); border-radius: 50%; opacity: 0.5; }
+
+        /* Card Content */
+        .card-content { position: relative; z-index: 2; padding: 35px 30px 28px; }
+
+        /* Logo */
+        .logo-row {
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap: 8px;
+        }
+        .logo-img {
+           width: 70px;
+           height: auto;
+           object-fit: contain;
+        }
+
+        .logo-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1;
+            margin-right: 20px;
+           
+        }
+
+        .logo-name .sapta { color: var(--brown); }
+        .logo-name .college { color: var(--orange); }
+
+        .logo-tagline {
+            font-size: 10px;
+            color: var(--brown);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        /* Verified Badge */
+        .verified-badge {
+            background: var(--green);
+            border-radius: 50px;
+            padding: 13px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 25px;
+            width: fit-content;
+            box-shadow: 0 6px 20px rgba(61,175,122,0.35);
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 6px 20px rgba(61,175,122,0.35); }
+            50% { box-shadow: 0 8px 28px rgba(61,175,122,0.55); }
+        }
+
+        .verified-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .verified-check { color: white; font-size: 18px; font-weight: bold; }
+
+        /* Photo */
+        .photo-section { display: flex; justify-content: center; margin-bottom: 20px; }
+
+        .photo-wrapper {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 5px solid var(--brown);
+            overflow: hidden;
+            background: linear-gradient(135deg, #e0e0e0, #c8c8c8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(124,78,45,0.25);
+        }
+
+        .photo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-placeholder { font-size: 65px; color: #aaa; }
+
+        /* Name */
+        .name-section { text-align: center; margin-bottom: 22px; }
+
+        .student-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark-navy);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .student-role {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Info Rows */
+        .info-section { padding: 0 8px; margin-bottom: 18px; }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            padding: 11px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--gray-label);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            min-width: 130px;
+            padding-top: 2px;
+        }
+
+        .info-value {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-value);
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        .course-row { flex-direction: column; padding: 14px 0; }
+        .course-row .info-label { margin-bottom: 6px; }
+        .course-row .info-value { font-size: 14px; text-transform: uppercase; font-weight: 700; line-height: 1.5; }
+
+        /* Footer */
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 8px 5px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .verified-timestamp {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .status-badge {
+            background: var(--green);
+            color: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 28px;
+            border-radius: 50px;
+            box-shadow: 0 4px 14px rgba(61,175,122,0.3);
+        }
+
+        .status-badge.expired {
+            background: #E74C3C;
+            box-shadow: 0 4px 14px rgba(231,76,60,0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #directoryView { padding: 25px 18px; }
+            .student-grid { grid-template-columns: 1fr; }
+            .dots-left, .dots-right { display: none; }
+            .corner { width: 80px; height: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== DIRECTORY VIEW ===== -->
+    <div id="directoryView">
+        <div class="dir-logo">
+            
+            <div>
+                <div class="dir-logo-name"><span class="sapta">SAPTA </span><span class="college">College</span></div>
+                <div class="dir-logo-tagline">Freedom For Life</div>
+            </div>
+        </div>
+
+        <div class="dir-title"> Student Directory</div>
+        <div class="dir-subtitle">DIGITAL ID VERIFICATION SYSTEM</div>
+
+        <div class="stats-bar"> Total Students: <span id="studentCount">31</span></div>
+
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by name or student number...">
+
+        <div class="student-grid" id="studentGrid"></div>
+    </div>
+
+    <!-- ===== VERIFICATION VIEW ===== -->
+    <div id="verificationView" class="hidden">
+        <button class="back-btn" onclick="showDirectory()">← Back to Directory</button>
+
+        <div class="id-card">
+            <!-- Orange Corners -->
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+
+            <!-- Dot Patterns -->
+            <div class="dots dots-left" id="dotsLeft"></div>
+            <div class="dots dots-right" id="dotsRight"></div>
+
+            <!-- Card Content -->
+            <div class="card-content" id="cardContent"></div>
+        </div>
+    </div>
+
+    <script>
+        
+        // Student Data
+        let students = [
+            { studentNo: "SAP/DAC/26/1360", studentName: "Lois Mwikali Mutisya", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1360.jpg" },
+            { studentNo: "SAP/DAC/26/1361", studentName: "Lydia Wanyaga", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1361.jpg" },
+            { studentNo: "SAP/DAC/26/1362", studentName: "Peter Gicheru Miako", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1362.jpg" },
+            { studentNo: "SAP/DAC/26/1363", studentName: "Michael Muitah Wanderi", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1363.jpg" },
+            { studentNo: "SAP/DAC/26/1364", studentName: "Gregory Mbaaba Kibua", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1364.jpg " },
+            { studentNo: "SAP/DAC/26/1365", studentName: "Victor Omondi Sande", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: " IMAGES/SAP-DAC-26-1365.jpg" },
+            { studentNo: "SAP/DAC/26/1366", studentName: "Morgan Bahati Okoth", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1366.jpg" },
+            { studentNo: "SAP/DAC/26/1367", studentName: "Faith Jepchumba Limo", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "" },
+            { studentNo: "SAP/DAC/26/1368", studentName: "Dominic Kahuha Kinyua", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "" },
+            { studentNo: "SAP/DAC/26/1369", studentName: "Malebogo Halle Letang", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "" },
+            { studentNo: "SAP/DAC/26/1370", studentName: "Alice Nasimayu Nganga", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1370.jpg " },
+            { studentNo: "SAP/DAC/26/1371", studentName: "Brian Githua Njoroge", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "" },
+            { studentNo: "SAP/DAC/26/1372", studentName: "Josphat Njenga Kariuki", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1372.jpg" },
+            { studentNo: "SAP/DAC/26/1373", studentName: "Vincent Mwau Musaa", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1373.PNG" },
+            { studentNo: "SAP/DAC/26/1374", studentName: "Pauline Wandia Mutua", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1374.jpg" },
+            { studentNo: "SAP/DAC/26/1375", studentName: "Nancy Kageni Katana", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1375.PNG" },
+            { studentNo: "SAP/DAC/26/1376", studentName: "Kelvin Kaugi Mukuru", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "" },
+            { studentNo: "SAP/DAC/26/1377", studentName: "Clive Nathaniel Khisa", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "" },
+            { studentNo: "SAP/DAC/26/1378", studentName: "Godrey Barasa Were", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1378.jpg" },
+            { studentNo: "SAP/DAC/26/1379", studentName: "Margaret Waruguru Njuguna", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: " IMAGES/SAP-DAC-26-1379.jpg " },
+            { studentNo: "SAP/DAC/26/1380", studentName: "Meshack Njuguna Njoroge", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: " IMAGES/SAP-DAC-26-1380.jpg" },
+            { studentNo: "SAP/DAC/26/1381", studentName: "Jemtai Maisie Meg", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1381.jpg" },
+            { studentNo: "SAP/DAC/26/1382", studentName: "Joan Wambui Muturi", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1382.jpg" },
+            { studentNo: "SAP/DAC/26/1383", studentName: "Ian Kamau Njuguna", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1383.jpg" },
+            { studentNo: "SAP/DAC/26/1384", studentName: "Jane Waithira Ndungu", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1384.jpg" },
+            { studentNo: "SAP/DAC/26/1385", studentName: "Paskalina Wambui Wanjiku", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1385.jpg" },
+            { studentNo: "SAP/DAC/26/1386", studentName: "Belita Malenge Jacob", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1386.jpg" },
+            { studentNo: "SAP/DAC/26/1387", studentName: "Lydia Koech Chepleting", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1387.jpg" },
+            { studentNo: "SAP/DAC/26/1388", studentName: "Joyce Muvai Mwinzi", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1388.PNG" },
+            { studentNo: "SAP/DAC/26/1389", studentName: "Manoj Prabhashanker Mehta", gender: "Male", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "" },
+            { studentNo: "SAP/DAC/26/1390", studentName: "Jane Muia Ndave", gender: "Female", course: "Diploma in Chemical Dependancy and Addiction Counselling", dateOfIssue: "14 Jan 2026", expiryDate: "14 July 2027", photoUrl: "IMAGES/SAP-DAC-26-1390.jpg" }
+        ];
+           // ========== GOOGLE SHEETS CONFIGURATION ==========
+        const SHEET_ID = '10wRDjAtFM07GF8x3OzZSDtKPjsroGD0K9IKkd5SI_nY';
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Data&headers=1`;
+        
+    
+        // ========== FETCH FROM GOOGLE SHEETS ==========
+        async function loadStudentsFromSheet() {
+            try {
+                const response = await fetch(SHEET_URL);
+                const text = await response.text();
+                
+                // Parse Google Sheets JSON format
+               const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+                
+                students = json.table.rows.map(row => ({
+                    studentNo: row.c[0]?.v || '',
+                    studentName: row.c[1]?.v || '',
+                    gender: row.c[2]?.v || '',
+                    course: row.c[3]?.v || '',
+                    dateOfIssue: row.c[4]?.f || row.c[4]?.v || '',
+                    expiryDate: row.c[5]?.f || row.c[5]?.v || '',
+                    photoUrl: row.c[6]?.v || ''
+                })).filter(s => s.studentNo && s.studentName);
+                
+                allStudents = [...students];
+                return true;
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                alert('⚠️ Could not load student data from Google Sheets. Please check your internet connection.');
+                return false;
+            }
+        }
+
+        // ========== CHECK URL FOR STUDENT ID ==========
+        function getStudentIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Generate dots
+        function makeDots(id, count) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = Array(count).fill('<div class="dot"></div>').join('');
+        }
+
+        // Get timestamp
+        function getTimestamp() {
+            const n = new Date();
+            return `${String(n.getDate()).padStart(2,'0')}/${String(n.getMonth()+1).padStart(2,'0')}/${n.getFullYear()}, ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+        }
+
+        // Check status
+        function getStatus(expiry) {
+            try {
+                const today = new Date();
+                const exp = new Date(expiry.replace('.','').trim());
+                if (isNaN(exp)) return { text: 'ACTIVE', expired: false };
+                return today > exp ? { text: 'EXPIRED', expired: true } : { text: 'ACTIVE', expired: false };
+            } catch(e) {
+                return { text: 'ACTIVE', expired: false };
+            }
+        }
+
+       
+
+        // Show verification card
+        function showVerification(studentNo) {
+            const student = students.find(s => s.studentNo === studentNo);
+            if (!student) return;
+
+            const status = getStatus(student.expiryDate);
+            const timestamp = getTimestamp();
+            const photoHtml = student.photoUrl
+                ? `<img src="${student.photoUrl}" alt="${student.studentName}">`
+                : `<span class="photo-placeholder">👤</span>`;
+
+            document.getElementById('cardContent').innerHTML = `
+                <div class="logo-row">
+                     <img src="IMAGES/sapta-logo.png" alt="SAPTA College Logo" class="logo-img">
+
+                    <div>
+                        <div class="logo-name"><span class="sapta">SAPTA </span><span class="college">College</span></div>
+                        <div class="logo-tagline">Freedom For Life</div>
+                    </div>
+                </div>
+
+                <div style="text-align:center;">
+                    <div class="verified-badge">
+                        <span class="verified-text">VERIFIED STUDENT ID</span>
+                        <span class="verified-check">✓</span>
+                    </div>
+                </div>
+
+                <div class="photo-section">
+                    <div class="photo-wrapper">${photoHtml}</div>
+                </div>
+
+                <div class="name-section">
+                    <div class="student-name">${student.studentName}</div>
+                    <div class="student-role">Student</div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-row">
+                        <span class="info-label">Student No.</span>
+                        <span class="info-value">${student.studentNo}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Gender</span>
+                        <span class="info-value">${student.gender.toUpperCase()}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date of Issue</span>
+                        <span class="info-value">${student.dateOfIssue}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Valid Until</span>
+                        <span class="info-value">${student.expiryDate}</span>
+                    </div>
+                    <div class="info-row course-row">
+                        <span class="info-label">Course</span>
+                        <span class="info-value">${student.course}</span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span class="verified-timestamp">Verified: ${timestamp}</span>
+                    <span class="status-badge ${status.expired ? 'expired' : ''}">${status.text}</span>
+                </div>
+            `;
+
+            makeDots('dotsLeft', 30);
+            makeDots('dotsRight', 30);
+
+            document.getElementById('directoryView').classList.add('hidden');
+            document.getElementById('verificationView').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // Show directory
+        function showDirectory() {
+            document.getElementById('verificationView').classList.add('hidden');
+            document.getElementById('directoryView').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // Render directory
+        function renderDirectory(list) {
+            document.getElementById('studentCount').textContent = list.length;
+            document.getElementById('studentGrid').innerHTML = list.map(s => `
+                <div class="student-card-dir" onclick="showVerification('${s.studentNo}')">
+                    <div class="dir-student-id">${s.studentNo}</div>
+                    <div class="dir-student-name">${s.studentName}</div>
+                    <div class="dir-student-gender">${s.gender}</div>
+                </div>
+            `).join('');
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', e => {
+            const term = e.target.value.toLowerCase();
+            renderDirectory(students.filter(s =>
+                s.studentName.toLowerCase().includes(term) ||
+                s.studentNo.toLowerCase().includes(term)
+            ));
+        });
+
+        // Init
+        async function init() {
+    const loaded = await loadStudentsFromSheet();
+    if (!loaded) {
+        renderDirectory(students);
+        return;
+    }
+    renderDirectory(students);
+}
+
+init();
+    </script>
+</body>
+</html>
