@@ -649,25 +649,13 @@
         });
 
         // Init
-       async function loadStudentsFromSheet() {
-    try {
-        const response = await fetch(SHEET_URL);
-        const text = await response.text();
-        const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-        students = json.table.rows.map(row => ({
-            studentNo: row.c[0]?.v || '',
-            studentName: row.c[1]?.v || '',
-            gender: row.c[2]?.v || '',
-            course: row.c[3]?.v || '',
-            dateOfIssue: row.c[4]?.f || row.c[4]?.v || '',
-            expiryDate: row.c[5]?.f || row.c[5]?.v || '',
-            photoUrl: row.c[6]?.v || ''
-        })).filter(s => s.studentNo && s.studentName);
-        return true;
-    } catch (error) {
-        console.error('Sheet load failed, using local data:', error);
-        return false; // ← No alert, just silent fallback
+        async function init() {
+    const loaded = await loadStudentsFromSheet();
+    if (!loaded) {
+        renderDirectory(students);
+        return;
     }
+    renderDirectory(students);
 }
 
 init();
