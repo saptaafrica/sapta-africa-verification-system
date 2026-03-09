@@ -398,10 +398,21 @@
             padding: 16px 8px 5px;
             border-top: 1px solid #F0F0F0;
         }
-
+        .timestamp-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.timestamp-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gray-label);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
         .verified-timestamp {
             font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
+            font-size: 10px;
             font-weight: 700;
             color: var(--dark);
         }
@@ -638,10 +649,13 @@
                     </div>
                 </div>
 
-                <div class="card-footer">
-                    <span class="verified-timestamp">Verified: ${timestamp}</span>
-                    <span class="status-badge ${status.expired ? 'expired' : ''}">${status.text}</span>
-                </div>
+               <div class="card-footer">
+<div class="timestamp-block">
+        <span class="timestamp-label">VERIFIED ON</span>
+        <span class="verified-timestamp">${timestamp}</span>
+    </div>
+    <span class="status-badge ${status.expired ? 'expired' : ''}">${status.text}</span>
+</div>
             `;
 
             makeDots('dotsLeft', 30);
