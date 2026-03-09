@@ -426,7 +426,7 @@
 
     <!-- ===== VERIFICATION VIEW ===== -->
     <div id="verificationView" class="hidden">
-        <button class="back-btn" onclick="showDirectory()">← Back to Directory</button>
+        <button class="back-btn" id="backBtn" onclick="showDirectory()">← Back to Directory</button>
 
         <div class="id-card">
             <!-- Orange Corners -->
@@ -654,6 +654,7 @@
     if (urlId) {
         // QR code scan — hide directory, show card directly
         document.getElementById('directoryView').classList.add('hidden');
+        document.getElementById('backBtn').classList.add('hidden');
         await loadStudentsFromSheet();
         showVerification(urlId);
     } else {
