@@ -650,18 +650,19 @@
 
         // Init
         async function init() {
-    const loaded = await loadStudentsFromSheet();
-    if (!loaded) {
-        renderDirectory(students);
-    } else {
-        renderDirectory(students);
-    }
     const urlId = getStudentIdFromURL();
     if (urlId) {
+        // QR code scan — hide directory, show card directly
+        document.getElementById('directoryView').classList.add('hidden');
+        await loadStudentsFromSheet();
         showVerification(urlId);
+    } else {
+        // Normal visit — show directory
+        const loaded = await loadStudentsFromSheet();
+        if (!loaded) renderDirectory(students);
+        else renderDirectory(students);
     }
 }
-
 init();
     </script>
 </body>
