@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SAPTA College Student Verification</title>
+
+<style>
+body{
+font-family: Arial;
+background:#f4f4f4;
+text-align:center;
+padding:40px;
+}
+
+.card{
+background:white;
+width:350px;
+margin:auto;
+padding:25px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.verified{
+color:green;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>SAPTA College</h2>
+<h3>Student Verification Portal</h3>
+
+<div class="card" id="studentCard"></div>
+
+<script>
+
+const students = {
+
+"SAPTA001":{
+name:"John Kamau",
+course:"Community Development",
+status:"Verified"
+},
+
+"SAPTA002":{
+name:"Mary Wanjiku",
+course:"Business Management",
+status:"Verified"
+}
+
+};
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+const student = students[id];
+
+if(student){
+
+document.getElementById("studentCard").innerHTML = `
+<h3>${student.name}</h3>
+<p><b>Student ID:</b> ${id}</p>
+<p><b>Course:</b> ${student.course}</p>
+<p class="verified">${student.status}</p>
+`;
+
+}else{
+
+document.getElementById("studentCard").innerHTML = `
+<h3>Student Not Found</h3>
+`;
+
+}
+
+</script>
+
+</body>
+</html>
