@@ -653,9 +653,13 @@
     const loaded = await loadStudentsFromSheet();
     if (!loaded) {
         renderDirectory(students);
-        return;
+    } else {
+        renderDirectory(students);
     }
-    renderDirectory(students);
+    const urlId = getStudentIdFromURL();
+    if (urlId) {
+        showVerification(urlId);
+    }
 }
 
 init();
